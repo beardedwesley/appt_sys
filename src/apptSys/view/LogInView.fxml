@@ -1,14 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<AnchorPane id="AnchorPane" prefHeight="200" prefWidth="320" xmlns:fx="http://javafx.com/fxml/1" fx:controller="apptSys.controller.LogInViewController">
-    <children>
-        <Button layoutX="126" layoutY="90" text="Click Me!" onAction="#handleButtonAction" fx:id="button" />
-        <Label layoutX="126" layoutY="120" minHeight="16" minWidth="69" fx:id="label" />
-    </children>
-</AnchorPane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="apptSys.controller.LogInViewController">
+   <top>
+      <Region BorderPane.alignment="CENTER" />
+   </top>
+   <bottom>
+      <Region BorderPane.alignment="CENTER" />
+   </bottom>
+   <right>
+      <Region BorderPane.alignment="CENTER" />
+   </right>
+   <left>
+      <Region BorderPane.alignment="CENTER" />
+   </left>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <Region VBox.vgrow="ALWAYS" />
+            <HBox>
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="usernameLbl" prefHeight="50.0" prefWidth="120.0" text="Username: " />
+                  <TextField fx:id="usernameTxt" prefHeight="50.0" prefWidth="275.0" />
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Region maxHeight="25.0" VBox.vgrow="ALWAYS" />
+            <HBox>
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="passwordLbl" prefHeight="50.0" prefWidth="120.0" text="Password:" />
+                  <PasswordField fx:id="passwordTxt" prefHeight="50.0" prefWidth="275.0" />
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Region VBox.vgrow="ALWAYS" />
+            <HBox>
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Button fx:id="logInBtn" mnemonicParsing="false" onAction="#onLogInBtnClick" prefHeight="50.0" prefWidth="100.0" text="Log in">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#onCancelBtnClick" prefHeight="50.0" prefWidth="100.0" text="Cancel">
+                     <HBox.margin>
+                        <Insets left="10.0" right="55.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+            <Region VBox.vgrow="ALWAYS" />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

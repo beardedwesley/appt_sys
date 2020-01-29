@@ -8,19 +8,24 @@ import javafx.stage.Stage;
 
 public class ApptSys extends Application {
 
+
+    public static Stage currStage, prevStage;
+
     @Override
     public void start(Stage stage) throws Exception {
+
+        currStage = stage;
+        prevStage = stage;
+
+        //TODO: get locale and set language & time zone info
+
         Parent root = FXMLLoader.load(getClass().getResource("view/LogInView.fxml"));
-
-        Scene scene = new Scene(root);
-
-        stage.setScene(scene);
+        stage.setScene(new Scene(root));
+        stage.setOnCloseRequest(e -> System.exit(0));
         stage.show();
     }
 
-    /**
-     * @param args the command line arguments
-     */
+
     public static void main(String[] args) {
         launch(args);
     }
