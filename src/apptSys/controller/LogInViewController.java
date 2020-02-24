@@ -1,6 +1,7 @@
 package apptSys.controller;
 
 import apptSys.ApptSys;
+import apptSys.model.DBAccessory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,7 +33,7 @@ public class LogInViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        reB = rb;
+        reB = ApptSys.reB;
 
         //check user's location and display labels in local language
         usernameLbl.setText(reB.getString("usernameTxt"));
@@ -55,12 +56,21 @@ public class LogInViewController implements Initializable {
             return;
         }
 
-        //TODO: check username/password combo against database
+        Integer userID = apptSys.model.DBAccessory.verifyUser(usernameTxt.getText(), passwordTxt.getText());
+        if (userID.equals(null) || userID.intValue() == -1){
+            //TODO show error message that no match was found
+            return;
+        }
 
-        //if found, log user's sign-in and load main screen
+        //found, log user's sign-in and load main screen
+        //TODO: log user's successful sign in
+
+        ApptSys.userID = userID;
+        ApptSys.apptList = DBAccessory.getAppointmentList(userID);
+
         Parent root = FXMLLoader.load(getClass().getResource("view/MainView.fxml"));
         ApptSys.currStage.setScene(new Scene(root));
-        ApptSys.currStage.setOnCloseRequest(e -> System.exit(0));
+        ApptSys.currStage.setOnCloseRequest(e -> ApptSys.saveShut());
         ApptSys.currStage.show();
 
     }

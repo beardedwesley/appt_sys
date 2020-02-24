@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<SplitPane dividerPositions="0.6666" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+  <items>
+      <VBox prefHeight="698.0" prefWidth="803.0">
+         <children>
+            <Region prefHeight="25.0" VBox.vgrow="ALWAYS" />
+            <HBox VBox.vgrow="ALWAYS">
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label prefHeight="25.0" prefWidth="25.0" text="Title">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="titleTxt" prefHeight="25.0" prefWidth="225.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox VBox.vgrow="ALWAYS">
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <VBox>
+                     <children>
+                        <Label text="Start Date" />
+                        <DatePicker fx:id="startDatePkr" />
+                     </children>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox>
+                     <children>
+                        <Label text="Start Time" />
+                        <ChoiceBox fx:id="startTimeOpt" prefWidth="150.0" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Appointment Type" />
+                        <TextField fx:id="apptTypeTxt" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox VBox.vgrow="ALWAYS">
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <VBox>
+                     <children>
+                        <Label text="End Date" />
+                        <DatePicker fx:id="endDatePkr" />
+                     </children>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox>
+                     <children>
+                        <Label text="End Time" />
+                        <ChoiceBox fx:id="endTimeOpt" prefWidth="150.0" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox prefWidth="150.0" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox VBox.vgrow="ALWAYS">
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <VBox prefWidth="500.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Description" />
+                        <TextArea fx:id="descTxt" prefHeight="75.0" prefWidth="350.0" />
+                     </children>
+                  </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox VBox.vgrow="ALWAYS">
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <VBox HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Customer" />
+                        <ChoiceBox fx:id="custOpt" prefWidth="100.0" />
+                     </children>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Location" />
+                        <TextArea fx:id="locTxt" prefHeight="75.0" prefWidth="100.0" />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox VBox.vgrow="ALWAYS">
+               <children>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Button fx:id="newBtn" minWidth="60.0" mnemonicParsing="false" prefWidth="60.0" text="New">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="delBtn" minWidth="60.0" mnemonicParsing="false" prefWidth="60.0" text="Delete">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Region prefWidth="225.0" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="saveBtn" minWidth="60.0" mnemonicParsing="false" prefWidth="60.0" text="Save">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="canxBtn" minWidth="60.0" mnemonicParsing="false" prefWidth="60.0" text="Cancel" />
+                  <Region HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Region prefHeight="25.0" VBox.vgrow="ALWAYS" />
+         </children>
+      </VBox>
+      <ScrollPane hbarPolicy="NEVER" prefWidth="350.0">
+         <content>
+            <TableView fx:id="agendaTbl" prefHeight="700.0" prefWidth="400.0">
+              <columns>
+                  <TableColumn fx:id="dateCol" prefWidth="60.0" text="Date" />
+                <TableColumn fx:id="timeCol" prefWidth="60.0" text="Time" />
+                <TableColumn fx:id="titleCol" prefWidth="150.0" text="Title" />
+                  <TableColumn fx:id="custCol" prefWidth="125.0" text="Customer" />
+              </columns>
+            </TableView>
+         </content>
+      </ScrollPane>
+  </items>
+</SplitPane>
