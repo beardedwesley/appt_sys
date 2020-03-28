@@ -2,9 +2,13 @@ package apptSys.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 
-public class MainViewController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class MainViewController implements Initializable {
 
     @FXML
     private Tab homeTab;
@@ -38,4 +42,13 @@ public class MainViewController {
 
     }
 
+    @FXML
+    void repSelected(ActionEvent event) {
+
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+    }
 }

@@ -15,5 +15,8 @@
     <Tab fx:id="custTab" closable="false" onSelectionChanged="#custSelected" text="Customers">
       <fx:include source="CustListView.fxml" />
     </Tab>
+    <Tab fx:id="repTab" closable="false" onSelectionChanged="#repSelected" text="Reports">
+      <fx:include source="ReportsView.fxml" />
+    </Tab>
   </tabs>
 </TabPane>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<TabPane prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="apptSys.controller.ReportsViewController">
+   <tabs>
+      <Tab text="Appointments by Type">
+        <content>
+            <SplitPane dividerPositions="0.3333333333333333">
+               <items>
+                  <VBox prefHeight="671.0" prefWidth="566.0">
+                     <children>
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox VBox.vgrow="ALWAYS">
+                           <children>
+                              <Region HBox.hgrow="ALWAYS" />
+                              <ListView fx:id="typeList" prefHeight="500.0" prefWidth="300.0" />
+                              <Region HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <Region VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+                  <TableView fx:id="typeApptTbl" prefHeight="200.0" prefWidth="202.0">
+                    <columns>
+                      <TableColumn fx:id="typeDateCol" minWidth="25.0" prefWidth="125.0" text="Date" />
+                      <TableColumn fx:id="typeTimeCol" minWidth="25.0" prefWidth="125.0" text="Time" />
+                        <TableColumn fx:id="typeTitleCol" minWidth="25.0" prefWidth="325.0" text="Title" />
+                        <TableColumn fx:id="typeCustCol" minWidth="25.0" prefWidth="225.0" text="Customer" />
+                    </columns>
+                  </TableView>
+               </items>
+            </SplitPane>
+        </content>
+      </Tab>
+      <Tab text="Appointments by Consultant">
+         <content>
+            <SplitPane dividerPositions="0.3333333333333333" prefHeight="200.0" prefWidth="200.0">
+               <items>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox VBox.vgrow="ALWAYS">
+                           <children>
+                              <Region HBox.hgrow="ALWAYS" />
+                              <ListView fx:id="userList" prefHeight="500.0" prefWidth="300.0" />
+                              <Region HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <Region VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+                  <TableView fx:id="userApptTbl" prefHeight="200.0" prefWidth="200.0">
+                    <columns>
+                      <TableColumn fx:id="userDateCol" minWidth="25.0" prefWidth="125.0" text="Date" />
+                      <TableColumn fx:id="userTimeCol" minWidth="25.0" prefWidth="125.0" text="Time" />
+                        <TableColumn fx:id="userTitleCol" minWidth="25.0" prefWidth="325.0" text="Title" />
+                        <TableColumn fx:id="userCustCol" minWidth="25.0" prefWidth="225.0" text="Customer" />
+                    </columns>
+                  </TableView>
+               </items>
+            </SplitPane>
+         </content>
+      </Tab>
+      <Tab text="Appointments by Customer">
+        <content>
+            <SplitPane dividerPositions="0.3333333333333333">
+               <items>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox VBox.vgrow="ALWAYS">
+                           <children>
+                              <Region HBox.hgrow="ALWAYS" />
+                              <ListView fx:id="custList" prefHeight="500.0" prefWidth="300.0" />
+                              <Region HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <Region VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+                  <TableView fx:id="custApptTbl" prefHeight="200.0" prefWidth="200.0">
+                    <columns>
+                      <TableColumn fx:id="custDateCol" minWidth="25.0" prefWidth="125.0" text="Date" />
+                      <TableColumn fx:id="custTimeCol" minWidth="25.0" prefWidth="125.0" text="Time" />
+                        <TableColumn fx:id="custTitleCol" minWidth="25.0" prefWidth="325.0" text="Title" />
+                        <TableColumn fx:id="custUserCol" minWidth="25.0" prefWidth="225.0" text="Consultant" />
+                    </columns>
+                  </TableView>
+               </items>
+            </SplitPane>
+        </content>
+      </Tab>
+   </tabs>
+</TabPane>

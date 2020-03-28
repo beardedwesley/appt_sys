@@ -1,87 +1,179 @@
 package apptSys.model;
 
+import apptSys.ApptSys;
+import javafx.scene.control.Alert;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class Customer {
 
+    /* Instance Variables */
     private int customerID, addressID, active;
-    private String customerName, createdBy, updatedBy;
-    private LocalDateTime created, updated;
+    private String customerName, createdBy, lastUpdateBy;
+    private LocalDateTime createDate, lastUpdate;
+    private Address address;
 
-    public Customer(int customerID, int addressID, int active, String customerName, String createdBy, LocalDateTime created) {
+    /* Constructors */
+    public Customer(int customerID, String customerName, int addressID, LocalDateTime createDate, String createdBy) throws SQLException {
         this.customerID = customerID;
+        this.customerName = customerName;
         this.addressID = addressID;
         this.active = active;
-        this.customerName = customerName;
+        this.createDate = createDate;
         this.createdBy = createdBy;
-        this.created = created;
-        this.updatedBy = createdBy;
-        this.updated = created;
+        this.lastUpdate = createDate;
+        this.lastUpdateBy = createdBy;
+        this.address = DBAccessory.getAddress(addressID);
     }
-
-    public Customer(int customerID, int addressID, int active, String customerName, String createdBy, String updatedBy, LocalDateTime created, LocalDateTime updated) {
+    public Customer(int customerID, String customerName, int addressID, int active, LocalDateTime createDate, String createdBy, LocalDateTime lastUpdate, String lastUpdateBy) throws SQLException {
         this.customerID = customerID;
+        this.customerName = customerName;
         this.addressID = addressID;
         this.active = active;
-        this.customerName = customerName;
+        this.createDate = createDate;
         this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
-        this.created = created;
-        this.updated = updated;
+        this.lastUpdate = lastUpdate;
+        this.lastUpdateBy = lastUpdateBy;
+        this.address = DBAccessory.getAddress(addressID);
     }
 
+    /* Standard Accessors */
     public int getCustomerID() {
         return customerID;
     }
-
-    public int getAddressID() {
-        return addressID;
-    }
-
-    public int getActive() {
-        return active;
-    }
-
     public String getCustomerName() {
         return customerName;
     }
-
+    public int getAddressID() {
+        return addressID;
+    }
+    public int getActive() {
+        return active;
+    }
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
     public String getCreatedBy() {
         return createdBy;
     }
-
-    public String getUpdatedBy() {
-        return updatedBy;
+    public LocalDateTime getLastUpdate() {
+        return lastUpdate;
     }
-
-    public LocalDateTime getCreated() {
-        return created;
+    public String getLastUpdateBy() {
+        return lastUpdateBy;
     }
+    public Address getAddress() {return address;}
 
-    public LocalDateTime getUpdated() {
-        return updated;
-    }
+    /* Custom Accessors (for displaying in TableView) */
+    public String getPhoneNumber() { return address.getPhone(); }
+    public String getCity() { return address.getCity().getCity(); }
+    public String getCountry() { return address.getCity().getCountry().getCountry(); }
 
-    public void updateCust(int nwAddressID, String nwCustName) {
+    /* Custom Mutator, pushes update to Database */
+    public void updateCust(String nwCustName, String nwCustAdd1, String nwCustAdd2, String nwCustPhone,
+                           String nwCustCity, String nwCustCountry, String nwCustPC) throws SQLException {
 
-        if(this.addressID != nwAddressID) {
-            this.addressID = nwAddressID;
-        }
         if(!(this.customerName.equals(nwCustName))) {
             this.customerName = nwCustName;
         }
+
+        //Look to see if updated address matches an existing address in database (if it has changed)
+        if(!(this.address.getAddress1().equals(nwCustAdd1) && this.address.getAddress2().equals(nwCustAdd2))) {
+            int addMatch = -1;
+            for (int i = 0; i < ApptSys.addList.size(); i++) {
+
+                Address currAddy = ApptSys.addList.get(i);
+                if(currAddy.getAddress1().equals(nwCustAdd1) && currAddy.getAddress2().equals(nwCustAdd2) &&
+                        currAddy.getPostalCode().equals(nwCustPC)) {
+
+                    City currCity = currAddy.getCity();
+                    if (currCity.getCity().equals(nwCustCity)) {
+
+                        Country currCountry = currCity.getCountry();
+                        if (currCountry.getCountry().equals(nwCustCountry)) {
+                            addMatch = i;
+
+                        }
+                    }
+                }
+            }
+
+            if(addMatch != -1){
+
+                this.address = ApptSys.addList.get(addMatch);
+                this.addressID = this.address.getAddressID();
+                this.lastUpdate = LocalDateTime.now();
+                this.lastUpdateBy = ApptSys.currUser.getUserName();
+                return;
+            }
+        } else {
+
+            int countryMatch = -1, cityMatch = -1, addressMatch = -1;
+
+            for (int i = 0; i < ApptSys.countryList.size(); i++) {
+                Country currCountry = ApptSys.countryList.get(i);
+                if (currCountry.getCountry().equals(nwCustCountry)) {
+                    countryMatch = currCountry.getCountryID();
+                }
+            }
+            if (countryMatch == -1) {
+                Country nwCountry = new Country(DBAccessory.getNextCountryID(), nwCustCountry, LocalDateTime.now(),
+                        ApptSys.currUser.getUserName(), LocalDateTime.now(), ApptSys.currUser.getUserName());
+                DBAccessory.addCountry(nwCountry);
+                ApptSys.countryList.add(nwCountry);
+                countryMatch = nwCountry.getCountryID();
+            }
+            for (int i = 0; i < ApptSys.cityList.size(); i++) {
+                City currCity = ApptSys.cityList.get(i);
+                if (currCity.getCity().equals(nwCustCity) && currCity.getCountryID() == countryMatch) {
+                    cityMatch = currCity.getCityID();
+                }
+            }
+            if (cityMatch == -1) {
+                City nwCity = new City(DBAccessory.getNextCityID(), nwCustCity, countryMatch, LocalDateTime.now(),
+                        ApptSys.currUser.getUserName(), LocalDateTime.now(), ApptSys.currUser.getUserName());
+                DBAccessory.addCity(nwCity);
+                ApptSys.cityList.add(nwCity);
+                cityMatch = nwCity.getCityID();
+            }
+
+            for (int i = 0; i < ApptSys.addList.size(); i++) {
+                Address currAddy = ApptSys.addList.get(i);
+                if (currAddy.getAddress1().equals(nwCustAdd1) && currAddy.getAddress2().equals(nwCustAdd2) &&
+                        currAddy.getPostalCode().equals(nwCustPC) && currAddy.getCityID() == cityMatch) {
+                    addressMatch = currAddy.getAddressID();
+                }
+            }
+            if(addressMatch == -1) {
+                Address nwAddress = new Address(DBAccessory.getNextAddID(), nwCustAdd1, nwCustAdd2, cityMatch, nwCustPC,
+                        nwCustPhone, LocalDateTime.now(), ApptSys.currUser.getUserName(),
+                        LocalDateTime.now(), ApptSys.currUser.getUserName());
+                DBAccessory.addAddress(nwAddress);
+                ApptSys.addList.add(nwAddress);
+                addressMatch = nwAddress.getAddressID();
+            }
+            this.addressID = addressMatch;
+            this.address = DBAccessory.getAddress(addressMatch);
+        }
+
 
         try {
             if (DBAccessory.updateCust(this)) {
                 return;
             } else {
-                //TODO advise of error as customer could not be updated
+                Alert alert = new Alert(Alert.AlertType.ERROR, "An unknown error has occurred. Customer could not be updated.");
+                alert.showAndWait();
             }
         }
         catch (SQLException e) {
-            //TODO Warn user that database not reachable or submission does not meet criteria, please try again
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Database unavailable, please make sure you are connected to the internet.");
+            alert.showAndWait();
         }
+    }
 
+    @Override
+    public String toString() {
+        return customerName;
     }
 }
