@@ -18,7 +18,6 @@ public class ApptSys extends Application {
 
     /* Global Variables */
     public static Stage currStage, prevStage;
-    public static Locale locale;
     public static ResourceBundle reB;
     public static User currUser;
 
@@ -52,8 +51,7 @@ public class ApptSys extends Application {
         currStage = stage;
         prevStage = stage;
 
-        locale = Locale.getDefault();
-        reB = ResourceBundle.getBundle("ApptSys", locale);
+        reB = ResourceBundle.getBundle("apptSys.utils.apptSys", new Locale(Locale.getDefault().getLanguage()));
 
         Parent root = FXMLLoader.load(getClass().getResource("view/LogInView.fxml"));
         stage.setScene(new Scene(root));

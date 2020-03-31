@@ -1,7 +1,6 @@
 package apptSys.model;
 
 import apptSys.ApptSys;
-import javafx.scene.control.Alert;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -79,97 +78,52 @@ public class Customer {
         }
 
         //Look to see if updated address matches an existing address in database (if it has changed)
-        if(!(this.address.getAddress1().equals(nwCustAdd1) && this.address.getAddress2().equals(nwCustAdd2))) {
-            int addMatch = -1;
-            for (int i = 0; i < ApptSys.addList.size(); i++) {
+        int countryMatch = -1, cityMatch = -1, addressMatch = -1;
 
-                Address currAddy = ApptSys.addList.get(i);
-                if(currAddy.getAddress1().equals(nwCustAdd1) && currAddy.getAddress2().equals(nwCustAdd2) &&
-                        currAddy.getPostalCode().equals(nwCustPC)) {
-
-                    City currCity = currAddy.getCity();
-                    if (currCity.getCity().equals(nwCustCity)) {
-
-                        Country currCountry = currCity.getCountry();
-                        if (currCountry.getCountry().equals(nwCustCountry)) {
-                            addMatch = i;
-
-                        }
-                    }
-                }
-            }
-
-            if(addMatch != -1){
-
-                this.address = ApptSys.addList.get(addMatch);
-                this.addressID = this.address.getAddressID();
-                this.lastUpdate = LocalDateTime.now();
-                this.lastUpdateBy = ApptSys.currUser.getUserName();
-                return;
-            }
-        } else {
-
-            int countryMatch = -1, cityMatch = -1, addressMatch = -1;
-
-            for (int i = 0; i < ApptSys.countryList.size(); i++) {
-                Country currCountry = ApptSys.countryList.get(i);
+        for (int i = 0; i < ApptSys.countryList.size(); i++)
+            for (Country currCountry : ApptSys.countryList) {
                 if (currCountry.getCountry().equals(nwCustCountry)) {
                     countryMatch = currCountry.getCountryID();
                 }
-            }
-            if (countryMatch == -1) {
-                Country nwCountry = new Country(DBAccessory.getNextCountryID(), nwCustCountry, LocalDateTime.now(),
-                        ApptSys.currUser.getUserName(), LocalDateTime.now(), ApptSys.currUser.getUserName());
-                DBAccessory.addCountry(nwCountry);
-                ApptSys.countryList.add(nwCountry);
-                countryMatch = nwCountry.getCountryID();
-            }
-            for (int i = 0; i < ApptSys.cityList.size(); i++) {
-                City currCity = ApptSys.cityList.get(i);
-                if (currCity.getCity().equals(nwCustCity) && currCity.getCountryID() == countryMatch) {
-                    cityMatch = currCity.getCityID();
-                }
-            }
-            if (cityMatch == -1) {
-                City nwCity = new City(DBAccessory.getNextCityID(), nwCustCity, countryMatch, LocalDateTime.now(),
-                        ApptSys.currUser.getUserName(), LocalDateTime.now(), ApptSys.currUser.getUserName());
-                DBAccessory.addCity(nwCity);
-                ApptSys.cityList.add(nwCity);
-                cityMatch = nwCity.getCityID();
-            }
-
-            for (int i = 0; i < ApptSys.addList.size(); i++) {
-                Address currAddy = ApptSys.addList.get(i);
-                if (currAddy.getAddress1().equals(nwCustAdd1) && currAddy.getAddress2().equals(nwCustAdd2) &&
-                        currAddy.getPostalCode().equals(nwCustPC) && currAddy.getCityID() == cityMatch) {
-                    addressMatch = currAddy.getAddressID();
-                }
-            }
-            if(addressMatch == -1) {
-                Address nwAddress = new Address(DBAccessory.getNextAddID(), nwCustAdd1, nwCustAdd2, cityMatch, nwCustPC,
-                        nwCustPhone, LocalDateTime.now(), ApptSys.currUser.getUserName(),
-                        LocalDateTime.now(), ApptSys.currUser.getUserName());
-                DBAccessory.addAddress(nwAddress);
-                ApptSys.addList.add(nwAddress);
-                addressMatch = nwAddress.getAddressID();
-            }
-            this.addressID = addressMatch;
-            this.address = DBAccessory.getAddress(addressMatch);
         }
-
-
-        try {
-            if (DBAccessory.updateCust(this)) {
-                return;
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "An unknown error has occurred. Customer could not be updated.");
-                alert.showAndWait();
+        if (countryMatch == -1) {
+            Country nwCountry = new Country(DBAccessory.getNextCountryID(), nwCustCountry, LocalDateTime.now(),
+                    ApptSys.currUser.getUserName(), LocalDateTime.now(), ApptSys.currUser.getUserName());
+            DBAccessory.addCountry(nwCountry);
+            ApptSys.countryList.add(nwCountry);
+            countryMatch = nwCountry.getCountryID();
+        }
+        for (City currCity : ApptSys.cityList) {
+            if (currCity.getCity().equals(nwCustCity) && currCity.getCountryID() == countryMatch) {
+                cityMatch = currCity.getCityID();
             }
         }
-        catch (SQLException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Database unavailable, please make sure you are connected to the internet.");
-            alert.showAndWait();
+        if (cityMatch == -1) {
+            City nwCity = new City(DBAccessory.getNextCityID(), nwCustCity, countryMatch, LocalDateTime.now(),
+                    ApptSys.currUser.getUserName(), LocalDateTime.now(), ApptSys.currUser.getUserName());
+            DBAccessory.addCity(nwCity);
+            ApptSys.cityList.add(nwCity);
+            cityMatch = nwCity.getCityID();
         }
+
+        for (Address currAddy : ApptSys.addList) {
+            if (currAddy.getAddress1().equals(nwCustAdd1) && currAddy.getAddress2().equals(nwCustAdd2) &&
+                    currAddy.getPostalCode().equals(nwCustPC) && currAddy.getCityID() == cityMatch) {
+                addressMatch = currAddy.getAddressID();
+            }
+        }
+        if(addressMatch == -1) {
+            Address nwAddress = new Address(DBAccessory.getNextAddID(), nwCustAdd1, nwCustAdd2, cityMatch, nwCustPC,
+                    nwCustPhone, LocalDateTime.now(), ApptSys.currUser.getUserName(),
+                    LocalDateTime.now(), ApptSys.currUser.getUserName());
+            DBAccessory.addAddress(nwAddress);
+            ApptSys.addList.add(nwAddress);
+            addressMatch = nwAddress.getAddressID();
+        }
+        this.lastUpdate = LocalDateTime.now();
+        this.lastUpdateBy = ApptSys.currUser.getUserName();
+        this.addressID = addressMatch;
+        this.address = DBAccessory.getAddress(addressMatch);
     }
 
     @Override

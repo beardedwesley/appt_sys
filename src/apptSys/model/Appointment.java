@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 public class Appointment implements Comparable{
 
@@ -17,7 +18,7 @@ public class Appointment implements Comparable{
 
     /* Constructors */
     public Appointment(int appointmentID, int customerID, int userID, String title, String description, String location,
-                       String contact, String type, String url, String createdBy) {
+                       String contact, String type, String url, LocalDateTime start, LocalDateTime end, String createdBy) throws SQLException {
         this.appointmentID = appointmentID;
         this.customerID = customerID;
         this.userID = userID;
@@ -27,12 +28,13 @@ public class Appointment implements Comparable{
         this.contact = contact;
         this.type = type;
         this.url = url;
-        this.start = LocalDateTime.now();
-        this.end = LocalDateTime.now();
+        this.start = start;
+        this.end = end;
         this.createDate = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.lastUpdate = LocalDateTime.now();
+        this.lastUpdate = this.createDate;
         this.lastUpdateBy = createdBy;
+        this.customer = DBAccessory.getCustomer(customerID);
     }
     public Appointment(int appointmentID, int customerID, int userID, String title, String description, String location,
                        String contact, String type, String url, LocalDateTime start, LocalDateTime end, LocalDateTime createDate,
@@ -75,7 +77,10 @@ public class Appointment implements Comparable{
         return location;
     }
     public String getContact() {
-        return contact;
+        if (this.contact != null) {
+            return contact;
+        }
+        else return "";
     }
     public String getType() {
         return type;
@@ -104,18 +109,19 @@ public class Appointment implements Comparable{
     public Customer getCustomer() { return customer;}
 
     /* Custom Accessors */
-    public LocalDate getDate() { return start.toLocalDate();}
-    public LocalTime getStartTime() {return start.toLocalTime();}
-    public LocalTime getEndTime() { return end.toLocalTime();}
+    public LocalDate getDate() { return this.start.toLocalDate();}
+    public LocalTime getStartTime() {return getStart().toLocalTime().truncatedTo(ChronoUnit.MINUTES);}
+    public LocalTime getEndTime() { return getEnd().toLocalTime().truncatedTo(ChronoUnit.MINUTES);}
     public String getDetails() {
         return new StringBuilder().append(title).append("\n").append(start.toLocalTime()).toString();
     }
 
     /* Custom Mutator */
     public void updateAppt(int nwCustID, String nwTitle, String nwDescription, String nwLocation, String nwContact,
-                           String nwType, LocalDateTime nwStart, LocalDateTime nwEnd) {
+                           String nwType, LocalDateTime nwStart, LocalDateTime nwEnd) throws SQLException {
         if(this.customerID != nwCustID) {
             this.customerID = nwCustID;
+            this.customer = DBAccessory.getCustomer(nwCustID);
         }
         if(!(this.title.equals(nwTitle))) {
             this.title = nwTitle;

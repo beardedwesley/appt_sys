@@ -21,9 +21,7 @@ public class CustListViewController implements Initializable {
     private boolean flagIsNew = false;
 
     @FXML
-    private TextField custNameTxt, custPhoneTxt, custAdd1Txt, custAdd2Txt, custCityTxt, custPCTxt;
-    @FXML
-    private ChoiceBox<String> custCountryOpt;
+    private TextField custNameTxt, custPhoneTxt, custAdd1Txt, custAdd2Txt, custCityTxt, custPCTxt, custCountryTxt;
     @FXML
     private TableView<Customer> custListTbl;
     @FXML
@@ -49,7 +47,7 @@ public class CustListViewController implements Initializable {
                         DBAccessory.deleteCustomer(selected);
                         ApptSys.custList.remove(selected);
                         ApptSys.custNameList.remove(selected.getCustomerName());
-                        custSelectModel.select(1);
+                        custSelectModel.selectFirst();
                     } catch (SQLException e) {
                         Alert oops = new Alert(Alert.AlertType.ERROR, "Database unavailable. Please make" +
                                 " sure you are connected to the internet and try again.");
@@ -64,8 +62,7 @@ public class CustListViewController implements Initializable {
 
         //make sure field are filled
         if (custNameTxt.getText().isEmpty() || custPhoneTxt.getText().isEmpty() || custAdd1Txt.getText().isEmpty()
-                || custAdd2Txt.getText().isEmpty() || custCityTxt.getText().isEmpty() || custPCTxt.getText().isEmpty()
-                || custCountryOpt.getValue() == null) {
+            || custCityTxt.getText().isEmpty() || custPCTxt.getText().isEmpty() || custCountryTxt.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must have a value.");
             alert.showAndWait();
             return;
@@ -77,48 +74,90 @@ public class CustListViewController implements Initializable {
         }
 
         if (flagIsNew) {
-            Country country = new Country(
+            Country countryE = null;
+            boolean flagCountryE = false;
+            for (Country country : ApptSys.countryList) {
+                if (country.getCountry().equalsIgnoreCase(custCountryTxt.getText())) {
+                    countryE = country;
+                    flagCountryE = true;
+                    break;
+                }
+            }
+            if (!flagCountryE) {
+                countryE = new Country(
                     DBAccessory.getNextCountryID(),
-                    custCountryOpt.getValue(),
+                    custCountryTxt.getText(),
                     LocalDateTime.now(),
                     ApptSys.currUser.getUserName(),
                     LocalDateTime.now(),
                     ApptSys.currUser.getUserName()
-            );
+                );
+                DBAccessory.addCountry(countryE);
+                ApptSys.countryList.add(countryE);
+            }
 
-            DBAccessory.addCountry(country);
+            City cityE = null;
+            boolean flagCityE = false;
+            for (City city : ApptSys.cityList) {
+                if (city.getCity().equalsIgnoreCase(custCityTxt.getText())) {
+                    cityE = city;
+                    flagCityE = true;
+                    break;
+                }
 
-            City citE = new City(
-                    DBAccessory.getNextCityID(),
-                    custCityTxt.getText(),
-                    country.getCountryID(),
-                    LocalDateTime.now(),
-                    ApptSys.currUser.getUserName(),
-                    LocalDateTime.now(),
-                    ApptSys.currUser.getUserName()
-            );
+            }
+            if (!flagCityE) {
+                cityE = new City(
+                        DBAccessory.getNextCityID(),
+                        custCityTxt.getText(),
+                        countryE.getCountryID(),
+                        LocalDateTime.now(),
+                        ApptSys.currUser.getUserName(),
+                        LocalDateTime.now(),
+                        ApptSys.currUser.getUserName()
+                );
+                DBAccessory.addCity(cityE);
+                ApptSys.cityList.add(cityE);
+            }
 
-            DBAccessory.addCity(citE);
-
-            Address addy = new Address(
+            Address addressE = null;
+            boolean flagAddressE = false;
+            for (Address address : ApptSys.addList) {
+                if (
+                    address.getAddress1().equalsIgnoreCase(custAdd1Txt.getText()) &&
+                    address.getAddress2().equalsIgnoreCase(custAdd2Txt.getText()) &&
+                    address.getCityID() == cityE.getCityID() &&
+                    address.getPhone().equalsIgnoreCase(custPhoneTxt.getText()) &&
+                    address.getPostalCode().equalsIgnoreCase(custPCTxt.getText()) &&
+                    address.getCity().getCountryID() == countryE.getCountryID()
+                ) {
+                    addressE = address;
+                    flagAddressE = true;
+                    break;
+                }
+            }
+            if (!flagAddressE) {
+                addressE = new Address(
                     DBAccessory.getNextAddID(),
                     custAdd1Txt.getText(),
                     custAdd2Txt.getText(),
-                    citE.getCityID(),
+                    cityE.getCityID(),
                     custPCTxt.getText(),
                     custPhoneTxt.getText(),
                     LocalDateTime.now(),
                     ApptSys.currUser.getUserName(),
                     LocalDateTime.now(),
                     ApptSys.currUser.getUserName()
-            );
+                );
 
-            DBAccessory.addAddress(addy);
+                DBAccessory.addAddress(addressE);
+                ApptSys.addList.add(addressE);
+            }
 
             Customer cust = new Customer(
                     DBAccessory.getNextCustID(),
                     custNameTxt.getText(),
-                    addy.getAddressID(),
+                    addressE.getAddressID(),
                     1,
                     LocalDateTime.now(),
                     ApptSys.currUser.getUserName(),
@@ -127,7 +166,9 @@ public class CustListViewController implements Initializable {
             );
 
             ApptSys.custList.add(cust);
+            ApptSys.custNameList.add(cust.getCustomerName());
             DBAccessory.addCustomer(cust);
+            flagIsNew = false;
 
         } else {
             selected.updateCust(
@@ -136,16 +177,17 @@ public class CustListViewController implements Initializable {
                     custAdd2Txt.getText(),
                     custPhoneTxt.getText(),
                     custCityTxt.getText(),
-                    custCountryOpt.getValue(),
+                    custCountryTxt.getText(),
                     custPCTxt.getText()
             );
+            DBAccessory.updateCust(selected);
+            DBAccessory.updateAddress(selected.getAddress());
         }
-
-        flagIsNew = false;
     }
     @FXML
     void onCnxBtn(ActionEvent event) {
         fillAllFields(selected);
+        flagIsNew = false;
     }
 
     /* Helper Methods */
@@ -156,7 +198,7 @@ public class CustListViewController implements Initializable {
         custAdd2Txt.setText(cust.getAddress().getAddress2());
         custCityTxt.setText(cust.getAddress().getCity().getCity());
         custPCTxt.setText(cust.getAddress().getPostalCode());
-        custCountryOpt.setValue(cust.getAddress().getCity().getCountry().getCountry());
+        custCountryTxt.setText(cust.getAddress().getCity().getCountry().getCountry());
     }
     private void clearAllFields() {
         custNameTxt.clear();
@@ -165,7 +207,7 @@ public class CustListViewController implements Initializable {
         custAdd2Txt.clear();
         custCityTxt.clear();
         custPCTxt.clear();
-        custCountryOpt.getSelectionModel().selectFirst();
+        custCountryTxt.clear();
     }
 
 
@@ -182,17 +224,10 @@ public class CustListViewController implements Initializable {
         custSelectModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 fillAllFields(newValue);
-                selected = newValue;}
+                selected = newValue;
+                flagIsNew = false;
+            }
         }); //This lamda allows me to set an event listener and consumer in a single statement instead of needing to define a secondary helper method
-        custSelectModel.select(1);
-
-        try {
-            custCountryOpt.setItems(DBAccessory.getCounNameList());
-        } catch (SQLException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Database unavailable. Please check your internet" +
-                    " connection and restart the application.");
-            alert.showAndWait();
-            ApptSys.saveShut();
-        }
+        custListTbl.selectionModelProperty().get().selectFirst();
     }
 }

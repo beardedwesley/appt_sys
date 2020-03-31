@@ -3,7 +3,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<SplitPane dividerPositions="0.6666" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="apptSys.controller.HomeViewController">
+<SplitPane dividerPositions="0.6" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="apptSys.controller.HomeViewController">
   <items>
       <VBox prefHeight="698.0" prefWidth="803.0">
          <children>
@@ -16,7 +16,7 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="titleTxt" prefHeight="25.0" prefWidth="225.0">
+                  <TextField fx:id="apptTitleTxt" prefHeight="25.0" prefWidth="225.0">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
@@ -30,7 +30,7 @@
                   <VBox>
                      <children>
                         <Label text="Start Date" />
-                        <DatePicker fx:id="startDatePkr" onAction="#setStartAvailability" prefHeight="25.0" prefWidth="175.0" />
+                        <DatePicker fx:id="apptStartDatePkr" onAction="#setStartAvailability" prefHeight="25.0" prefWidth="175.0" />
                      </children>
                      <HBox.margin>
                         <Insets right="10.0" />
@@ -39,7 +39,7 @@
                   <VBox>
                      <children>
                         <Label text="Start Time" />
-                        <ChoiceBox fx:id="startTimeOpt" prefHeight="25.0" prefWidth="125.0" />
+                        <ComboBox fx:id="apptStartTimeOpt" onAction="#setEndAvailability" prefHeight="25.0" prefWidth="125.0" />
                      </children>
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
@@ -48,7 +48,7 @@
                   <VBox>
                      <children>
                         <Label text="End Time" />
-                        <ChoiceBox fx:id="endTimeOpt" prefHeight="25.0" prefWidth="125.0" />
+                        <ComboBox fx:id="apptEndTimeOpt" prefHeight="25.0" prefWidth="125.0" />
                      </children>
                      <HBox.margin>
                         <Insets left="10.0" />
@@ -71,6 +71,21 @@
                      </children>
                   </VBox>
                   <Region HBox.hgrow="ALWAYS" />
+                  <VBox>
+                     <children>
+                        <Label text="Contact">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Label>
+                        <TextField fx:id="apptContactTxt" prefHeight="25.0" prefWidth="200.0">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </TextField>
+                     </children>
+                  </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
             <HBox VBox.vgrow="ALWAYS">
@@ -79,7 +94,7 @@
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Description" />
-                        <TextArea fx:id="descTxt" prefHeight="75.0" prefWidth="475.0" />
+                        <TextArea fx:id="apptDescTxt" prefHeight="75.0" prefWidth="475.0" />
                      </children>
                   </VBox>
                   <Region HBox.hgrow="ALWAYS" />
@@ -91,7 +106,7 @@
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Customer" />
-                        <ChoiceBox fx:id="custOpt" prefHeight="25.0" prefWidth="200.0" />
+                        <ComboBox fx:id="apptCustOpt" onAction="#apptFillLocation" prefHeight="25.0" prefWidth="200.0" />
                      </children>
                      <HBox.margin>
                         <Insets right="10.0" />
@@ -100,7 +115,7 @@
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Location" />
-                        <TextArea fx:id="locTxt" prefHeight="75.0" prefWidth="150.0" />
+                        <TextArea fx:id="apptLocTxt" prefHeight="75.0" prefWidth="150.0" />
                      </children>
                      <HBox.margin>
                         <Insets left="10.0" />
@@ -112,23 +127,23 @@
             <HBox VBox.vgrow="ALWAYS">
                <children>
                   <Region HBox.hgrow="ALWAYS" />
-                  <Button fx:id="newBtn" minWidth="60.0" mnemonicParsing="false" prefWidth="60.0" text="New">
+                  <Button fx:id="apptNewBtn" minWidth="60.0" mnemonicParsing="false" onAction="#apptNewBtnClk" prefWidth="60.0" text="New">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="delBtn" minWidth="60.0" mnemonicParsing="false" prefWidth="60.0" text="Delete">
+                  <Button fx:id="apptDelBtn" minWidth="60.0" mnemonicParsing="false" onAction="#apptDelBtnClk" prefWidth="60.0" text="Delete">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
                   </Button>
                   <Region prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="saveBtn" minWidth="60.0" mnemonicParsing="false" prefWidth="60.0" text="Save">
+                  <Button fx:id="apptSaveBtn" minWidth="60.0" mnemonicParsing="false" onAction="#apptSaveBtnClk" prefWidth="60.0" text="Save">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="canxBtn" minWidth="60.0" mnemonicParsing="false" prefWidth="60.0" text="Cancel" />
+                  <Button fx:id="apptCanxBtn" minWidth="60.0" mnemonicParsing="false" onAction="#apptCanxBtnClk" prefWidth="60.0" text="Cancel" />
                   <Region HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
@@ -137,12 +152,12 @@
       </VBox>
       <ScrollPane hbarPolicy="NEVER" prefWidth="350.0">
          <content>
-            <TableView fx:id="agendaTbl" prefHeight="700.0" prefWidth="400.0">
+            <TableView fx:id="agendaTbl" prefHeight="700.0" prefWidth="475.0">
               <columns>
-                  <TableColumn fx:id="dateCol" prefWidth="60.0" text="Date" />
-                <TableColumn fx:id="timeCol" prefWidth="60.0" text="Time" />
-                <TableColumn fx:id="titleCol" prefWidth="150.0" text="Title" />
-                  <TableColumn fx:id="custCol" prefWidth="125.0" text="Customer" />
+                  <TableColumn fx:id="apptDateCol" prefWidth="100.0" text="Date" />
+                <TableColumn fx:id="apptTimeCol" text="Time" />
+                <TableColumn fx:id="apptTitleCol" prefWidth="150.0" text="Title" />
+                  <TableColumn fx:id="apptCustCol" prefWidth="135.0" text="Customer" />
               </columns>
             </TableView>
          </content>

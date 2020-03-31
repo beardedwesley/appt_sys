@@ -1,26 +1,22 @@
 package apptSys.model;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 
 public class TimeKeeper {
-    private ZoneOffset userOffset;
 
-    public TimeKeeper(ZoneId userZone) {
-        this.userOffset = ZoneOffset.of(userZone.getId());
+    public static LocalDateTime convertToLocal(LocalDateTime data) {
+        OffsetDateTime zoned = OffsetDateTime.of(data, ZoneOffset.of(ZoneId.of("+00:00").getId()));
+        return  zoned.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    public TimeKeeper() {
-        this.userOffset = ZoneOffset.of(ZoneId.systemDefault().getId());
-    }
-
-    public LocalDateTime convertToLocal(LocalDateTime data) {
-        return data.plusSeconds(userOffset.getTotalSeconds());
-    }
-
-    public LocalDateTime convertToDataZ(LocalDateTime data) {
-        return data.minusSeconds(userOffset.getTotalSeconds());
+    public static LocalDateTime convertToDataZ(LocalDateTime data) {
+        ZoneId zoneId = ZoneId.systemDefault();
+        OffsetDateTime zoneData = OffsetDateTime.ofInstant(data.atZone(zoneId).toInstant(), zoneId);
+        ZonedDateTime zoned = zoneData.atZoneSameInstant(ZoneId.of("+00:00"));
+        return zoned.toLocalDateTime();
     }
 
 }
+
+
+//(ZoneOffset.of(ZoneId.systemDefault().getId())

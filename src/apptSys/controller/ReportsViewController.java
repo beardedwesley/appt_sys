@@ -70,7 +70,7 @@ public class ReportsViewController implements Initializable {
             if (newValue != null) {
                 populateTypeTbl(newValue);
             }
-        });
+        });//This lambda lets me efficiently run a report based on a selection
 
         userList.setItems(ApptSys.userNameList);
         userList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -78,7 +78,7 @@ public class ReportsViewController implements Initializable {
             if (newValue != null) {
                 populateUserTbl(newValue);
             }
-        });
+        });//This lambda lets me efficiently run a report based on a selection
 
         custList.setItems(ApptSys.custNameList);
         custList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -86,7 +86,7 @@ public class ReportsViewController implements Initializable {
             if (newValue != null) {
                 populateCustTbl(newValue);
             }
-        });
+        });//This lambda lets me efficiently run a report based on a selection
     }
 }
 

@@ -25,38 +25,38 @@ public class HomeViewController implements Initializable {
     /* Instance Variables */
     private Appointment selected;
     private boolean flagIsNew = false;
-    private ObservableList<LocalTime> start = FXCollections.observableArrayList();
-    private ObservableList<LocalTime> end = FXCollections.observableArrayList();
+    private ObservableList<LocalTime> apptStart = FXCollections.observableArrayList();
+    private ObservableList<LocalTime> apptEnd = FXCollections.observableArrayList();
     private ArrayList<Appointment> dayApptList = new ArrayList<Appointment>();
 
     @FXML
-    private TextField titleTxt, apptTypeTxt;
+    private TextField apptTitleTxt, apptTypeTxt, apptContactTxt;
     @FXML
-    private DatePicker startDatePkr;
+    private DatePicker apptStartDatePkr;
     @FXML
-    private ChoiceBox<LocalTime> startTimeOpt, endTimeOpt;
+    private ComboBox<LocalTime> apptStartTimeOpt, apptEndTimeOpt;
     @FXML
-    private TextArea descTxt, locTxt;
+    private TextArea apptDescTxt, apptLocTxt;
     @FXML
-    private ChoiceBox<Customer> custOpt;
+    private ComboBox<Customer> apptCustOpt;
 
     @FXML
     private TableView<Appointment> agendaTbl;
     @FXML
-    private TableColumn<Appointment, LocalDate> dateCol;
+    private TableColumn<Appointment, LocalDate> apptDateCol;
     @FXML
-    private TableColumn<Appointment, LocalTime> timeCol;
+    private TableColumn<Appointment, LocalTime> apptTimeCol;
     @FXML
-    private TableColumn<Appointment, String> titleCol, custCol;
+    private TableColumn<Appointment, String> apptTitleCol, apptCustCol;
 
     /* Action-Triggered Methods */
     @FXML
-    void newBtnClk(ActionEvent event) {
+    void apptNewBtnClk(ActionEvent event) {
         clearAllFields();
         flagIsNew = true;
     }
     @FXML
-    void delBtnClk(ActionEvent event) {
+    void apptDelBtnClk(ActionEvent event) {
 
         if (flagIsNew) {
             fillAllFields(selected);
@@ -71,7 +71,7 @@ public class HomeViewController implements Initializable {
                 try {
                     DBAccessory.deleteAppointment(selected);
                     ApptSys.apptList.remove(selected);
-                    selected = null;
+                    agendaTbl.getSelectionModel().select(1);//selected = null;
                 } catch (SQLException e) {
                     Alert oops = new Alert(Alert.AlertType.ERROR, "Database unavailable. Please make" +
                             " sure you are connected to the internet and try again.");
@@ -83,68 +83,88 @@ public class HomeViewController implements Initializable {
 
     }
     @FXML
-    void saveBtnClk(ActionEvent event) throws SQLException {
-
+    void apptSaveBtnClk(ActionEvent event) {
+        int index = ApptSys.apptList.indexOf(selected);
         //make sure field are filled
-        if (titleTxt.getText().isEmpty() || apptTypeTxt.getText().isEmpty() || startDatePkr.getValue() == null
-            || startTimeOpt.getValue() == null || endTimeOpt.getValue() == null || descTxt.getText().isEmpty()
-            || locTxt.getText().isEmpty() || custOpt.getValue() == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must have a value.");
+        if (apptTitleTxt.getText().isEmpty() || apptTypeTxt.getText().isEmpty() || apptStartDatePkr.getValue() == null
+            || apptStartTimeOpt.getValue() == null || apptEndTimeOpt.getValue() == null || apptDescTxt.getText().isEmpty()
+            || apptLocTxt.getText().isEmpty() || apptCustOpt.getValue() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "All fields except Contact must have a value.");
             alert.showAndWait();
             return;
         }
 
         //character limit enforcement
-        if (titleTxt.getText().length() > 255) {
-            titleTxt.setText(titleTxt.getText().substring(0, 255));
+        if (apptTitleTxt.getText().length() > 255) {
+            apptTitleTxt.setText(apptTitleTxt.getText().substring(0, 255));
         }
 
         //adding new appointment
         if (flagIsNew){
-            Appointment newAppt = new Appointment(
-                    DBAccessory.getNextApptID(),
-                    custOpt.getSelectionModel().getSelectedItem().getCustomerID(),
-                    ApptSys.currUser.getUserID(),
-                    titleTxt.getText(),
-                    descTxt.getText(),
-                    locTxt.getText(),
-                    custOpt.getSelectionModel().getSelectedItem().getCustomerName(),
-                    apptTypeTxt.getText(),
-                    "",
-                    ApptSys.currUser.getUserName()
-            );
-
-            ApptSys.apptList.add(newAppt);
-            DBAccessory.addApt(newAppt);
-            return;
+            int newID;
+            Appointment newAppt;
+            try {
+                newID = DBAccessory.getNextApptID();
+                newAppt = new Appointment(
+                        newID,
+                        apptCustOpt.getValue().getCustomerID(),
+                        ApptSys.currUser.getUserID(),
+                        apptTitleTxt.getText(),
+                        apptDescTxt.getText(),
+                        apptLocTxt.getText(),
+                        apptContactTxt.getText(),
+                        apptTypeTxt.getText(),
+                        "",
+                        LocalDateTime.of(apptStartDatePkr.getValue(), apptStartTimeOpt.getValue()),
+                        LocalDateTime.of(apptStartDatePkr.getValue(), apptEndTimeOpt.getValue()),
+                        ApptSys.currUser.getUserName());
+                DBAccessory.addAppt(newAppt);
+                ApptSys.apptList.add(newAppt);
+                if (!(ApptSys.typeNameList.contains(newAppt.getType()))){
+                    ApptSys.typeNameList.add(newAppt.getType());
+                }
+            } catch (SQLException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Database is currently unavailable. Please " +
+                        "check your internet connection and try again.");
+                alert.showAndWait();
+                return;
+            }
         } else {
-            selected.updateAppt(
-                    selected.getCustomerID(),
-                    titleTxt.getText(),
-                    descTxt.getText(),
-                    locTxt.getText(),
-                    custOpt.getValue().getCustomerName(),
-                    apptTypeTxt.getText(),
-                    LocalDateTime.of(startDatePkr.getValue(), startTimeOpt.getValue()),
-                    LocalDateTime.of(startDatePkr.getValue(), endTimeOpt.getValue())
-            );
-            DBAccessory.updateAppt(selected);
+            try {
+                selected.updateAppt(
+                        apptCustOpt.getValue().getCustomerID(),
+                        apptTitleTxt.getText(),
+                        apptDescTxt.getText(),
+                        apptLocTxt.getText(),
+                        apptContactTxt.getText(),
+                        apptTypeTxt.getText(),
+                        LocalDateTime.of(apptStartDatePkr.getValue(), apptStartTimeOpt.getValue()),
+                        LocalDateTime.of(apptStartDatePkr.getValue(), apptEndTimeOpt.getValue())
+                );
+                DBAccessory.updateAppt(selected);
+            } catch (SQLException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Database is currently unavailable. Please " +
+                        "check your internet connection and try again.");
+                alert.showAndWait();
+            } finally {
+                ApptSys.apptList.set(index, selected);
+            }
         }
-
         flagIsNew = false;
     }
     @FXML
-    void canxBtnClk(ActionEvent event) {
+    void apptCanxBtnClk(ActionEvent event) {
 
         fillAllFields(selected);
         flagIsNew = false;
     }
     @FXML
     void setStartAvailability(ActionEvent event) {
-        start = start.sorted();
+        apptStart.clear();
+        apptEnd.clear();
         dayApptList = new ArrayList<Appointment>();
         for (Appointment app : ApptSys.apptList) {
-            if (app.getDate().isEqual(startDatePkr.getValue())) {
+            if (app.getDate().isEqual(apptStartDatePkr.getValue())) {
                 dayApptList.add(app);
             }
         }
@@ -153,14 +173,22 @@ public class HomeViewController implements Initializable {
         LocalTime busCurr = LocalTime.of(8, 0);
 
         for (Appointment appt : dayApptList) {
+            if (appt.equals(selected)) {
+                for (;busCurr.isBefore(appt.getEndTime()); busCurr = busCurr.plusMinutes(15)) {
+                    LocalTime avail = LocalTime.of(busCurr.getHour(), busCurr.getMinute());
+                    apptStart.add(avail);
+                }
+                continue;
+            }
 
             for (; busCurr.isBefore(busEnd); busCurr = busCurr.plusMinutes(15)) {
-                if (busCurr.isBefore(appt.getStart().toLocalTime())) {
-                    start.add(busCurr);
+                if (busCurr.isBefore(appt.getStartTime())) {
+                    LocalTime avail = LocalTime.of(busCurr.getHour(), busCurr.getMinute());
+                    apptStart.add(avail);
                 } else if (busCurr.equals(appt.getStartTime()) ||
                         (busCurr.isAfter(appt.getStartTime()) && busCurr.isBefore(appt.getEndTime()))) {
                     continue;
-                } else if (busCurr.equals(appt.getEnd().toLocalTime())) {
+                } else if (busCurr.equals(appt.getEndTime())) {
                     break;
                 }
             }
@@ -168,51 +196,82 @@ public class HomeViewController implements Initializable {
 
         if (busCurr.isBefore(busEnd)) {
             for (;busCurr.isBefore(busEnd); busCurr = busCurr.plusMinutes(15)) {
-                start.add(busCurr);
+                LocalTime avail = LocalTime.of(busCurr.getHour(), busCurr.getMinute());
+                apptStart.add(avail);
             }
         }
 
     }
-    void setEndAvailability() {
-        end = end.sorted();
-        LocalTime busEnd = LocalTime.of(17, 0);
-        LocalTime busCurr = startTimeOpt.getValue().plusMinutes(15);
+    @FXML
+    void setEndAvailability(ActionEvent event) {
+        if (apptStart.isEmpty() || apptStartTimeOpt.getValue() == null) {return;}
 
-        for (Appointment appt : dayApptList) {
+        LocalTime busEnd = LocalTime.of(17, 1);
+        LocalTime busCurr = apptStartTimeOpt.getValue();
 
+        if (dayApptList.isEmpty() || dayApptList.size() == 1) {
+            busCurr = busCurr.plusMinutes(15);
             for (;busCurr.isBefore(busEnd); busCurr = busCurr.plusMinutes(15)) {
-                if (busCurr.isBefore(appt.getStartTime())) {
-                    end.add(busCurr);
-                } else if (busCurr.equals(appt.getStartTime())) {
-                    end.add(busCurr);
-                    return;
-                } else if (busCurr.isAfter(appt.getStartTime())){
-                    break;
+                LocalTime avail = LocalTime.of(busCurr.getHour(), busCurr.getMinute());
+                apptEnd.add(avail);
+            }
+        } else {
+            for (Appointment appt : dayApptList) {
+                if (dayApptList.indexOf(appt) == (dayApptList.size() - 1)) {
+                    busCurr = busCurr.plusMinutes(15);
+                    for (; busCurr.isBefore(busEnd); busCurr = busCurr.plusMinutes(15)) {
+                        LocalTime avail = LocalTime.of(busCurr.getHour(), busCurr.getMinute());
+                        apptEnd.add(avail);
+                    }
+                } else {
+                    for (; busCurr.isBefore(busEnd); busCurr = busCurr.plusMinutes(15)) {
+                        if (busCurr.isBefore(appt.getStartTime())) {
+                            LocalTime avail = LocalTime.of(busCurr.getHour(), busCurr.getMinute());
+                            apptEnd.add(avail);
+                        } else if (busCurr.equals(appt.getStartTime())) {
+                            LocalTime avail = LocalTime.of(busCurr.getHour(), busCurr.getMinute());
+                            apptEnd.add(avail);
+                            return;
+                        } else if (busCurr.isAfter(appt.getStartTime())) {
+                            return;
+                        }
+                    }
                 }
             }
+        }
+    }
+    @FXML
+    void apptFillLocation(ActionEvent event) {
+        if (apptCustOpt.getValue() == null) {return;}
+        if (!(apptLocTxt.getText().equalsIgnoreCase(apptCustOpt.getValue().getAddress().toString()))){
+            apptLocTxt.setText(apptCustOpt.getValue().getAddress().toString());
         }
     }
 
     /* Helper Methods */
     private void clearAllFields() {
-        titleTxt.clear();
-        startDatePkr.getEditor().clear();
-        startTimeOpt.getSelectionModel().select(0);
-        apptTypeTxt.clear();
-        endTimeOpt.getSelectionModel().select(0);
-        descTxt.clear();
-        custOpt.getSelectionModel().selectFirst();
-        locTxt.clear();
+        apptTitleTxt.setText("");
+        apptStartDatePkr.setValue(LocalDate.now());
+        apptStartTimeOpt.getSelectionModel().clearSelection();
+        apptTypeTxt.setText("");
+        apptContactTxt.setText("");
+        apptEndTimeOpt.getSelectionModel().clearSelection();
+        apptDescTxt.setText("");
+        apptCustOpt.getSelectionModel().clearSelection();
+        apptLocTxt.setText("");
+        apptStart.clear();
+        apptEnd.clear();
     }
     private void fillAllFields(Appointment appt) {
-        titleTxt.setText(appt.getTitle());
-        startDatePkr.setValue(appt.getStart().toLocalDate());
-        startTimeOpt.setValue(appt.getStartTime());
+        apptTitleTxt.setText(appt.getTitle());
+        apptStartDatePkr.setValue(appt.getStart().toLocalDate());
+        apptStartTimeOpt.setValue(appt.getStart().toLocalTime());
         apptTypeTxt.setText(appt.getType());
-        endTimeOpt.setValue(appt.getEndTime());
-        descTxt.setText(appt.getDescription());
-        custOpt.setValue(appt.getCustomer());
-        locTxt.setText(appt.getLocation());
+        apptContactTxt.setText(appt.getContact());
+        apptEndTimeOpt.setValue(appt.getEnd().toLocalTime());
+        apptDescTxt.setText(appt.getDescription());
+        apptCustOpt.getSelectionModel().select(appt.getCustomer());
+        apptLocTxt.setText(appt.getLocation());
     }
 
     @Override
@@ -220,40 +279,34 @@ public class HomeViewController implements Initializable {
 
         //TableView set up
         agendaTbl.setItems(ApptSys.apptList);
-        dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-        timeCol.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        custCol.setCellValueFactory(new PropertyValueFactory<>("customer"));
+        apptDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
+        apptTimeCol.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+        apptTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        apptCustCol.setCellValueFactory(new PropertyValueFactory<>("customer"));
         agendaTbl.selectionModelProperty().get().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                fillAllFields(newValue);
-                selected = newValue;}
+                selected = newValue;
+                this.fillAllFields(selected);
+            }
         });
 
         //Set resources for option boxes and event/selection listeners
         try {
-            custOpt.setItems(DBAccessory.getCustList());
+            apptCustOpt.setItems(DBAccessory.getCustList());
         } catch (SQLException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Database unavailable. Please check your internet" +
                     " connection and restart the application.");
             alert.showAndWait();
             ApptSys.saveShut();
         }
-        custOpt.selectionModelProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                locTxt.setText(newValue.getSelectedItem().getAddress().toString());
-            }
-        }); //This lamda allows me to set an event listener and consumer in a single statement instead of needing to define a helper method
-        startTimeOpt.setItems(start);
-        endTimeOpt.setItems(end);
-        startTimeOpt.selectionModelProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                setEndAvailability();
-            }
-        }));
+        apptCustOpt.setVisibleRowCount(7);
+        apptStartTimeOpt.setItems(apptStart);
+        apptStartTimeOpt.setVisibleRowCount(7);
+        apptEndTimeOpt.setItems(apptEnd);
+        apptEndTimeOpt.setVisibleRowCount(7);
 
         //Select first appointment to pre-fill
-        agendaTbl.selectionModelProperty().get().selectFirst();
+        agendaTbl.getSelectionModel().select(1);
     }
 }
 

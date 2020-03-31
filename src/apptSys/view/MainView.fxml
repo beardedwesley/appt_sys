@@ -4,19 +4,19 @@
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1220.0" side="LEFT" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="apptSys.controller.MainViewController">
   <tabs>
     <Tab fx:id="homeTab" closable="false" onSelectionChanged="#homeSelected" text="Home">
-      <fx:include source="HomeView.fxml" />
+      <fx:include fx:id="homeView" source="HomeView.fxml" />
     </Tab>
     <Tab fx:id="weekTab" closable="false" onSelectionChanged="#weekSelected" text="Week">
-      <fx:include source="CalWeekView.fxml" />
+      <fx:include fx:id="calWeekView" source="CalWeekView.fxml" />
     </Tab>
     <Tab fx:id="monthTab" closable="false" onSelectionChanged="#monthSelected" text="Month">
-      <fx:include source="CalMnthView.fxml" />
+      <fx:include fx:id="calMnthView" source="CalMnthView.fxml" />
     </Tab>
     <Tab fx:id="custTab" closable="false" onSelectionChanged="#custSelected" text="Customers">
-      <fx:include source="CustListView.fxml" />
+      <fx:include fx:id="custListView" source="CustListView.fxml" />
     </Tab>
     <Tab fx:id="repTab" closable="false" onSelectionChanged="#repSelected" text="Reports">
-      <fx:include source="ReportsView.fxml" />
+      <fx:include fx:id="reportsView" source="ReportsView.fxml" />
     </Tab>
   </tabs>
 </TabPane>

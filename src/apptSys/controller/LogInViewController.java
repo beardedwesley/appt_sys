@@ -34,7 +34,7 @@ public class LogInViewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         reB = ApptSys.reB;
 
-        //check user's location and display labels in local language
+        //display labels in local language
         usernameLbl.setText(reB.getString("usernameTxt"));
         passwordLbl.setText(reB.getString("passwordTxt"));
         logInBtn.setText(reB.getString("logInBtn"));
@@ -55,7 +55,7 @@ public class LogInViewController implements Initializable {
             return;
         }
 
-        Integer userID = apptSys.model.DBAccessory.verifyUser(usernameTxt.getText(), passwordTxt.getText());
+        Integer userID = DBAccessory.verifyUser(usernameTxt.getText(), passwordTxt.getText());
         if (userID.equals(null) || userID.intValue() == -1){
             Alert alert = new Alert(Alert.AlertType.ERROR, reB.getString("noUserMsg"));
             alert.showAndWait();
@@ -79,7 +79,7 @@ public class LogInViewController implements Initializable {
         Logger.logSignin(ApptSys.currUser);
 
         //Display main screen
-        Parent root = FXMLLoader.load(getClass().getResource("view/MainView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("../view/MainView.fxml"));
         ApptSys.currStage.setScene(new Scene(root));
         ApptSys.currStage.setOnCloseRequest(e -> ApptSys.saveShut());
         ApptSys.currStage.show();
