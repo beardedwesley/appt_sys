@@ -72,6 +72,25 @@ public class CustListViewController implements Initializable {
         if (custNameTxt.getText().length() > 45) {
             custNameTxt.setText(custNameTxt.getText().substring(0, 45));
         }
+        if (custAdd1Txt.getText().length() > 50) {
+            custAdd1Txt.setText(custAdd1Txt.getText().substring(0, 50));
+        }
+        if (custAdd2Txt.getText().length() > 50) {
+            custAdd2Txt.setText(custAdd2Txt.getText().substring(0, 50));
+        }
+        if (custPCTxt.getText().length() > 10) {
+            custPCTxt.setText(custPCTxt.getText().substring(0, 10));
+        }
+        if (custPhoneTxt.getText().length() > 20) {
+            custPhoneTxt.setText(custPhoneTxt.getText().substring(0, 20));
+        }
+        if (custCityTxt.getText().length() > 50) {
+            custCityTxt.setText(custCityTxt.getText().substring(0, 50));
+        }
+        if (custCountryTxt.getText().length() > 50) {
+            custCountryTxt.setText(custCountryTxt.getText().substring(0, 50));
+        }
+
 
         if (flagIsNew) {
             Country countryE = null;

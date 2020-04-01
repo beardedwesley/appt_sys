@@ -108,7 +108,8 @@ public class Customer {
 
         for (Address currAddy : ApptSys.addList) {
             if (currAddy.getAddress1().equals(nwCustAdd1) && currAddy.getAddress2().equals(nwCustAdd2) &&
-                    currAddy.getPostalCode().equals(nwCustPC) && currAddy.getCityID() == cityMatch) {
+                    currAddy.getPostalCode().equals(nwCustPC) && currAddy.getCityID() == cityMatch &&
+                    currAddy.getPhone().equalsIgnoreCase(nwCustPhone)) {
                 addressMatch = currAddy.getAddressID();
             }
         }

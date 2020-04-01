@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -88,9 +89,29 @@ public class HomeViewController implements Initializable {
         //make sure field are filled
         if (apptTitleTxt.getText().isEmpty() || apptTypeTxt.getText().isEmpty() || apptStartDatePkr.getValue() == null
             || apptStartTimeOpt.getValue() == null || apptEndTimeOpt.getValue() == null || apptDescTxt.getText().isEmpty()
-            || apptLocTxt.getText().isEmpty() || apptCustOpt.getValue() == null) {
+            || apptLocTxt.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "All fields except Contact must have a value.");
             alert.showAndWait();
+            return;
+        }
+
+        Appointment conflict;
+        try{
+            conflict = checkCustAvail();
+        } catch (SQLException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Database is currently unavailable. Please " +
+                    "check your internet connection and try again.");
+            alert.showAndWait();
+            return;
+        }
+        if (!(conflict == null)) {
+            StringBuilder errMessage = new StringBuilder();
+            errMessage.append(apptCustOpt.getValue().getCustomerName()).append(" has an appointment from ");
+            errMessage.append(conflict.getStartTime().truncatedTo(ChronoUnit.MINUTES).toString()).append(" to ");
+            errMessage.append(conflict.getEndTime().truncatedTo(ChronoUnit.MINUTES).toString()).append(".\n");
+            errMessage.append("Please update your appointment to outside of these times.");
+            Alert custConflict = new Alert(Alert.AlertType.ERROR, errMessage.toString());
+            custConflict.showAndWait();
             return;
         }
 
@@ -272,6 +293,20 @@ public class HomeViewController implements Initializable {
         apptDescTxt.setText(appt.getDescription());
         apptCustOpt.getSelectionModel().select(appt.getCustomer());
         apptLocTxt.setText(appt.getLocation());
+    }
+    private Appointment checkCustAvail() throws SQLException {
+        Appointment conflict = null;
+        Customer currCust = apptCustOpt.getValue();
+        ObservableList<Appointment> custApptList = DBAccessory.getApptListByCust(currCust.getCustomerName());
+        for (Appointment currAppt : custApptList) {
+            if (currAppt.getStart().toLocalDate().isEqual(apptStartDatePkr.getValue())) {
+                if ((!(currAppt.getStartTime().isBefore(apptStartTimeOpt.getValue()) && (currAppt.getEndTime().isBefore(apptStartTimeOpt.getValue()) || currAppt.getEndTime().equals(apptStartTimeOpt.getValue()))))
+                    && (!((currAppt.getStartTime().equals(apptStartTimeOpt.getValue()) || currAppt.getStartTime().isAfter(apptEndTimeOpt.getValue())) && currAppt.getEndTime().isAfter(apptEndTimeOpt.getValue())))) {
+                        conflict = currAppt;
+                }
+            }
+        }
+        return conflict;
     }
 
     @Override
